@@ -1,4 +1,5 @@
 import csv
+import sys
 from datetime import datetime
 import argparse
 
@@ -7,9 +8,23 @@ from matplotlib import pyplot as plt
 # Выбор для какого места отображать погоду.
 parser = argparse.ArgumentParser(description='Creating Daily Highs and Lows Temperatures Diagram')
 parser.add_argument('--place', type=int, choices=[1, 2],
-                    help='Choose: 1 - Sitka, 2 - Death Valley', required=True)
+                    help='Choose: 1 - Sitka, 2 - Death Valley', required=False)
 args = parser.parse_args()
 place = args.place
+
+if place is None:
+    try:
+        place = int(input('Choose place: 1 - Sitka, 2 - Death Valley: '))
+    except ValueError:
+        print('Wrong value: invalid data type.')
+        sys.exit()
+    else:
+        pass
+    if place > 2 or place < 1:
+        print('Wrong value: out of range.')
+        sys.exit()
+else:
+    pass
 
 weather_file = ''
 if place == 1:
@@ -46,7 +61,7 @@ plt.plot(dates, lows, c='blue', alpha=0.5)
 plt.fill_between(dates, highs, lows, facecolor='blue', alpha=0.1)
 
 # Форматирование диаграмы.
-plt.title(f'Daily Highs and Lows Temperatures, July 2014\n{place}', fontsize=24)
+plt.title(f'Daily Highs and Lows Temperatures, 2014\n{place}', fontsize=24)
 plt.xlabel('', fontsize=16)
 # Поворачивает подписи на оси X.
 fig.autofmt_xdate()
