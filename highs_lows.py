@@ -11,9 +11,17 @@ with open(weather_file) as weather:
 
     dates, highs, lows = [], [], []
     for row in reader:
-        dates.append(datetime.strptime(row[0], '%Y-%m-%d'))
-        lows.append(int(row[3]))
-        highs.append(int(row[1]))
+        # Обработка исключений. Если в исходном файле будет пропушенны значения high/low, программа продолжит работу.
+        try:
+            current_date = datetime.strptime(row[0], '%Y-%m-%d')
+            high = int(row[1])
+            low = int(row[3])
+        except ValueError:
+            print(f'{current_date} - Missing data')
+        else:
+            dates.append(current_date)
+            highs.append(high)
+            lows.append(low)
 
 # Нанесение данных на диаграму.
 fig = plt.figure(dpi=128, figsize=(10, 6))
