@@ -35,17 +35,23 @@ class FileSelect:
             return place
 
 
+def check_choice(place):
+    # Проверяет, какое место было выбрано.
+    if place == 1:
+        place = 'Sitka, Alaska'
+        weather_file = 'data/sitka_weather_2014.csv'
+        return place, weather_file
+    elif place == 2:
+        place = 'Death Valley, California'
+        weather_file = 'data/death_valley_2014.csv'
+        return place, weather_file
+
+
 select_file = FileSelect()
 place = select_file.get_argument()
 place = select_file.get_input(place)
+place, weather_file = check_choice(place)
 
-weather_file = ''
-if place == 1:
-    place = 'Sitka, Alaska'
-    weather_file = 'data/sitka_weather_2014.csv'
-elif place == 2:
-    place = 'Death Valley, California'
-    weather_file = 'data/death_valley_2014.csv'
 
 # Чтение дат, температурных минимумов и максимумов из файла.
 with open(weather_file) as weather:
