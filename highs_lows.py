@@ -10,7 +10,7 @@ class FileSelect:
     """Обрабатывает ввод с клавиатуры"""
     def get_argument(self):
         # Выбор для какого места отображать погоду.
-        parser = argparse.ArgumentParser(description='Creating Daily Highs and Lows Temperatures Diagram')
+        parser = argparse.ArgumentParser(description='Creating Daily Highs and Lows Temperatures Graph')
         parser.add_argument('--place', type=int, choices=[1, 2],
                             help='Choose: 1 - Sitka, 2 - Death Valley', required=False)
         args = parser.parse_args()
@@ -21,6 +21,7 @@ class FileSelect:
         # Если при запуске файла аргументы не получены, предоставляет выбор с помощью input.
         if place is None:
             try:
+                print('\nCreating Daily Highs and Lows Temperatures Graph\n')
                 place = int(input('Choose place: 1 - Sitka, 2 - Death Valley: '))
             except ValueError:
                 print('Wrong value: invalid data type.')
@@ -71,26 +72,29 @@ def read_file(weather_file):
         return dates, highs, lows
 
 
-select_file = FileSelect()
-place = select_file.get_argument()
-place = select_file.get_input(place)
-place, weather_file = check_choice(place)
-dates, highs, lows = read_file(weather_file)
-# Нанесение данных на диаграму.
-fig = plt.figure(dpi=128, figsize=(10, 6))
-plt.plot(dates, highs, c='red', alpha=0.5)
-plt.plot(dates, lows, c='blue', alpha=0.5)
-# Закрашевает область между линиями.
-plt.fill_between(dates, highs, lows, facecolor='blue', alpha=0.1)
+def render(dates, highs, lows):
+    # Принимает обработанные данные, рисует на их основе график.
+    fig = plt.figure(dpi=128, figsize=(10, 6))
+    plt.plot(dates, highs, c='red', alpha=0.5)
+    plt.plot(dates, lows, c='blue', alpha=0.5)
+    # Закрашевает область между линиями.
+    plt.fill_between(dates, highs, lows, facecolor='blue', alpha=0.1)
 
-# Форматирование диаграмы.
-plt.title(f'Daily Highs and Lows Temperatures, 2014\n{place}', fontsize=24)
-plt.xlabel('', fontsize=16)
-# Поворачивает подписи на оси X.
-fig.autofmt_xdate()
-plt.ylabel('Temperature (F)', fontsize=16)
-plt.tick_params(axis='both', which='major', labelsize=16)
+    # Форматирование графика.
+    plt.title(f'Daily Highs and Lows Temperatures, 2014\n{place}', fontsize=24)
+    plt.xlabel('', fontsize=16)
+    # Поворачивает подписи на оси X.
+    fig.autofmt_xdate()
+    plt.ylabel('Temperature (F)', fontsize=16)
+    plt.tick_params(axis='both', which='major', labelsize=16)
 
-plt.show()
+    plt.show()
 
 
+if __name__ == '__main__':
+    choose_file = FileSelect()
+    place = choose_file.get_argument()
+    place = choose_file.get_input(place)
+    place, weather_file = check_choice(place)
+    dates, highs, lows = read_file(weather_file)
+    render(dates, highs, lows)
