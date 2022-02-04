@@ -5,26 +5,39 @@ import argparse
 
 from matplotlib import pyplot as plt
 
-# Выбор для какого места отображать погоду.
-parser = argparse.ArgumentParser(description='Creating Daily Highs and Lows Temperatures Diagram')
-parser.add_argument('--place', type=int, choices=[1, 2],
-                    help='Choose: 1 - Sitka, 2 - Death Valley', required=False)
-args = parser.parse_args()
-place = args.place
 
-if place is None:
-    try:
-        place = int(input('Choose place: 1 - Sitka, 2 - Death Valley: '))
-    except ValueError:
-        print('Wrong value: invalid data type.')
-        sys.exit()
-    else:
-        pass
-    if place > 2 or place < 1:
-        print('Wrong value: out of range.')
-        sys.exit()
-else:
-    pass
+class FileSelect:
+    """Обрабатывает ввод с клавиатуры"""
+    def get_argument(self):
+        # Выбор для какого места отображать погоду.
+        parser = argparse.ArgumentParser(description='Creating Daily Highs and Lows Temperatures Diagram')
+        parser.add_argument('--place', type=int, choices=[1, 2],
+                            help='Choose: 1 - Sitka, 2 - Death Valley', required=False)
+        args = parser.parse_args()
+        place = args.place
+        return place
+
+    def get_input(self, place):
+        # Если при запуске файла аргументы не получены, предоставляет выбор с помощью input.
+        if place is None:
+            try:
+                place = int(input('Choose place: 1 - Sitka, 2 - Death Valley: '))
+            except ValueError:
+                print('Wrong value: invalid data type.')
+                sys.exit()
+            else:
+                if place > 2 or place < 1:
+                    print('Wrong value: out of range.')
+                    sys.exit()
+                else:
+                    return place
+        else:
+            return place
+
+
+select_file = FileSelect()
+place = select_file.get_argument()
+place = select_file.get_input(place)
 
 weather_file = ''
 if place == 1:
@@ -40,6 +53,7 @@ with open(weather_file) as weather:
     header_row = next(reader)
 
     dates, highs, lows = [], [], []
+    current_date = 0
     for row in reader:
         # Обработка исключений. Если в исходном файле будет пропушенны значения high/low, программа продолжит работу.
         try:
@@ -69,3 +83,5 @@ plt.ylabel('Temperature (F)', fontsize=16)
 plt.tick_params(axis='both', which='major', labelsize=16)
 
 plt.show()
+
+
