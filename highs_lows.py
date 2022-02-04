@@ -47,32 +47,35 @@ def check_choice(place):
         return place, weather_file
 
 
+def read_file(weather_file):
+    # Чтение дат, температурных минимумов и максимумов из файла.
+    with open(weather_file) as weather:
+        reader = csv.reader(weather)
+        header_row = next(reader)
+
+        dates, highs, lows = [], [], []
+        current_date = 0
+        for row in reader:
+            # Обработка исключений. Если в исходном файле будет пропушенны значения high/low,
+            # программа продолжит работу.
+            try:
+                current_date = datetime.strptime(row[0], '%Y-%m-%d')
+                high = int(row[1])
+                low = int(row[3])
+            except ValueError:
+                print(f'{current_date} - Missing data')
+            else:
+                dates.append(current_date)
+                highs.append(high)
+                lows.append(low)
+        return dates, highs, lows
+
+
 select_file = FileSelect()
 place = select_file.get_argument()
 place = select_file.get_input(place)
 place, weather_file = check_choice(place)
-
-
-# Чтение дат, температурных минимумов и максимумов из файла.
-with open(weather_file) as weather:
-    reader = csv.reader(weather)
-    header_row = next(reader)
-
-    dates, highs, lows = [], [], []
-    current_date = 0
-    for row in reader:
-        # Обработка исключений. Если в исходном файле будет пропушенны значения high/low, программа продолжит работу.
-        try:
-            current_date = datetime.strptime(row[0], '%Y-%m-%d')
-            high = int(row[1])
-            low = int(row[3])
-        except ValueError:
-            print(f'{current_date} - Missing data')
-        else:
-            dates.append(current_date)
-            highs.append(high)
-            lows.append(low)
-
+dates, highs, lows = read_file(weather_file)
 # Нанесение данных на диаграму.
 fig = plt.figure(dpi=128, figsize=(10, 6))
 plt.plot(dates, highs, c='red', alpha=0.5)
